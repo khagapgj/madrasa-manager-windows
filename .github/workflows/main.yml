@@ -1,0 +1,97 @@
+name: Windows Phase 2B Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  verify-and-build:
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Verify JavaScript, UI reference and offline assets
+        run: npm run verify:phase2a
+
+      - name: Verify SQLite schema and Student/Class SQL
+        run: |
+          python tests/test_migration_sql.py
+          python tests/test_student_class_sql.py
+
+      - name: Test backend repositories
+        run: cargo test --manifest-path backend-core-check/Cargo.toml
+
+      - name: Check and test actual Windows Tauri source
+        run: |
+          cargo check --manifest-path src-tauri/Cargo.toml
+          cargo test --manifest-path src-tauri/Cargo.toml
+
+      - name: Audit Student/Class legacy persistence
+        shell: pwsh
+        run: |
+          $text = Get-Content "src/index.html" -Raw
+          $forbidden = @(
+            "localStorage.getItem(STORAGE_KEYS.students",
+            "localStorage.getItem(STORAGE_KEYS.classes",
+            "localStorage.setItem(STORAGE_KEYS.students",
+            "localStorage.setItem(STORAGE_KEYS.classes",
+            "ShadowStorage.save(STORAGE_KEYS.students",
+            "ShadowStorage.save(STORAGE_KEYS.classes"
+          )
+          foreach ($item in $forbidden) {
+            if ($text.Contains($item)) { throw "Forbidden legacy persistence remains: $item" }
+          }
+          "Student/Class explicit legacy persistence calls: 0" | Out-File windows-storage-audit.txt
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Build Windows NSIS installer
+        working-directory: src-tauri
+        run: cargo tauri build --bundles nsis
+
+      - name: First launch and restart smoke test
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "src-tauri/target/release/madrasa-manager.exe"
+          $appData = Join-Path $env:APPDATA "bd.madrasamanager.desktop"
+          $db = Join-Path $appData "database/madrasa-manager.sqlite"
+          Remove-Item $appData -Recurse -Force -ErrorAction SilentlyContinue
+
+          $first = Start-Process $exe -PassThru
+          Start-Sleep -Seconds 12
+          if ($first.HasExited) { throw "Application exited during first launch" }
+          if (-not (Test-Path $db)) { throw "SQLite database was not created: $db" }
+          Stop-Process -Id $first.Id -Force
+
+          $second = Start-Process $exe -PassThru
+          Start-Sleep -Seconds 10
+          if ($second.HasExited) { throw "Application exited during restart" }
+          if (-not (Test-Path $db)) { throw "SQLite database missing after restart" }
+          Stop-Process -Id $second.Id -Force
+
+          "Windows first-launch and restart database smoke test: PASS" | Out-File windows-runtime-smoke.txt
+
+      - name: Upload installer and verification logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: madrasa-manager-windows-phase2b
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            windows-runtime-smoke.txt
+            windows-storage-audit.txt
