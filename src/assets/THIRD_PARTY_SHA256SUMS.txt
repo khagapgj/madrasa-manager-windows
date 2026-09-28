@@ -1,0 +1,12 @@
+e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb  src/assets/vendor/html2canvas-1.4.1.min.js
+3411692820cb8d47543f69496aa25fd603a358f4498046f41c508a5a3342210e  src/assets/vendor/lucide-0.468.0.min.js
+8a9889aecc2f011e15031fed87eeb35ac75e62655a7b4889ba247ee8ea872474  src/assets/vendor/sortable-1.15.0.min.js
+176e894661aa9cdc9a5cba6c720044cbbf7b8bd80d1c9a142a7c24b1b6c50d15  src/assets/vendor/tailwindcss-3.4.17.js
+d0f4bc7faca468376e3db9b5e57afcdc2192134c9ac82a9511f32767b56853a4  src/assets/fonts/inter-300.ttf
+1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba  src/assets/fonts/inter-400.ttf
+8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63  src/assets/fonts/inter-500.ttf
+e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7  src/assets/fonts/inter-600.ttf
+b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c  src/assets/fonts/inter-700.ttf
+d179a59cae8432fc8dc03be6f0b819597076d737b8ee222b2c23dc5c4c587016  src/assets/fonts/solaimanlipi-bold-v1.0.woff2
+817e0743bb382fc5d710ab94cabacd261927a24b40fbd2540e1a1a872cea2d41  src/assets/fonts/solaimanlipi-normal-v1.0.woff2
+613aa4f39a001cb022344194c8e226663ef28c4e1093bbb2dd44bd7fde45c19e  src/assets/fonts/solaimanlipi-thin-v1.0.woff2

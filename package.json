@@ -1,0 +1,13 @@
+{
+  "name": "madrasa-manager-foundation",
+  "private": true,
+  "version": "2.7.0-foundation",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests",
+    "test:contracts": "node --test tests/contracts/*.test.js",
+    "verify:reference": "node scripts/verify-reference.mjs",
+    "verify:no-remote-assets": "node scripts/verify-offline-assets.mjs",
+    "verify:phase2a": "npm run test && npm run verify:reference && npm run verify:no-remote-assets"
+  }
+}
