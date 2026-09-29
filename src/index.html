@@ -7159,8 +7159,9 @@
             });
 
             if (closeMenu) {
-                document.getElementById('adv-filter-menu').classList.add('hidden');
-                document.getElementById('adv-filter-backdrop').classList.add('hidden');
+                // Hide the full-screen modal container. Hiding only its children leaves
+                // a transparent fixed layer that blocks every button in the app.
+                document.getElementById('adv-filter-modal').classList.add('hidden');
             }
             filterStudents();
         }
